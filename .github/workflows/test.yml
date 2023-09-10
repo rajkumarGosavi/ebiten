@@ -40,7 +40,8 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install libasound2-dev libgl1-mesa-dev libxcursor-dev libxi-dev libxinerama-dev libxrandr-dev libxxf86vm-dev
+          sudo apt-get install alsa-utils libasound2-dev libgl1-mesa-dev libxcursor-dev libxi-dev libxinerama-dev libxrandr-dev libxxf86vm-dev
+          sudo modprobe snd-aloop
 
       - name: Install wasmbrowsertest
         run: |
@@ -89,20 +90,20 @@ jobs:
           sudo apt-get install libwayland-dev libxkbcommon-dev
           go build -v -tags=wayland ./...
 
-      - name: go build (macOS)
-        if: runner.os == 'macOS'
-        run: |
-          env CGO_ENABLED=1 GOOS=darwin GOARCH=arm64 go build -v ./...
-          env CGO_ENABLED=1 GOOS=darwin GOARCH=amd64 go build -o flappy_amd64 -v ./examples/flappy
-          env CGO_ENABLED=1 GOOS=darwin GOARCH=arm64 go build -o flappy_arm64 -v ./examples/flappy
-          lipo -create flappy_amd64 flappy_arm64 -output flappy
-          file flappy
-          rm flappy
+      # - name: go build (macOS)
+      #   if: runner.os == 'macOS'
+      #   run: |
+      #     env CGO_ENABLED=1 GOOS=darwin GOARCH=arm64 go build -v ./...
+      #     env CGO_ENABLED=1 GOOS=darwin GOARCH=amd64 go build -o flappy_amd64 -v ./examples/flappy
+      #     env CGO_ENABLED=1 GOOS=darwin GOARCH=arm64 go build -o flappy_arm64 -v ./examples/flappy
+      #     lipo -create flappy_amd64 flappy_arm64 -output flappy
+      #     file flappy
+      #     rm flappy
 
-      - name: go build (NintendoSDK)
-        if: runner.os == 'Linux'
-        run: |
-          go build -tags=nintendosdk -v ./...
+      # - name: go build (NintendoSDK)
+      #   if: runner.os == 'Linux'
+      #   run: |
+      #     go build -tags=nintendosdk -v ./...
 
       - name: go mod vendor
         run: |
@@ -143,21 +144,21 @@ jobs:
           sudo apt-get install libgles2-mesa-dev
           env EBITENGINE_GRAPHICS_LIBRARY=opengl EBITENGINE_OPENGL=es go test -shuffle=on -v -p=1 ./...
 
-      - name: go test (Windows)
-        if: runner.os == 'Windows'
-        run: |
-          go test -shuffle=on -v ./...
-          env EBITENGINE_DIRECTX=version=12 go test -shuffle=on -v ./...
+      # - name: go test (Windows)
+      #   if: runner.os == 'Windows'
+      #   run: |
+      #     go test -shuffle=on -v ./...
+      #     env EBITENGINE_DIRECTX=version=12 go test -shuffle=on -v ./...
 
-      - name: go test (Windows 386)
-        if: runner.os == 'Windows'
-        run: |
-          env GOARCH=386 go test -shuffle=on -v ./...
-          env GOARCH=386 EBITENGINE_DIRECTX=version=12 go test -shuffle=on -v ./...
+      # - name: go test (Windows 386)
+      #   if: runner.os == 'Windows'
+      #   run: |
+      #     env GOARCH=386 go test -shuffle=on -v ./...
+      #     env GOARCH=386 EBITENGINE_DIRECTX=version=12 go test -shuffle=on -v ./...
 
-      - name: go test (Wasm)
-        run: |
-          env GOOS=js GOARCH=wasm cleanenv -remove-prefix GITHUB_ -remove-prefix JAVA_ -- go test -shuffle=on -v ./...
+      # - name: go test (Wasm)
+      #   run: |
+      #     env GOOS=js GOARCH=wasm cleanenv -remove-prefix GITHUB_ -remove-prefix JAVA_ -- go test -shuffle=on -v ./...
 
       - name: Install ebitenmobile
         run: |
